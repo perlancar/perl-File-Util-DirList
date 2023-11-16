@@ -58,7 +58,7 @@ sub _cp_or_mv_or_ln_files_to_dirs {
 
         if ($action eq 'mv') {
             if ($args{-dry_run}) {
-                log_info "[DRY_RUN] [#%d/%d] Moving %s to dir %s ...", $i+1, scalar(@$files_then_dirs), $file, $dir;
+                log_info "DRY-RUN: [#%d/%d] Moving %s to dir %s ...", $i+1, scalar(@$files_then_dirs), $file, $dir;
                 $envres->add_result(200, "OK (dry-run)", {item_id=>$file});
             } else {
                 log_info "[#%d/%d] Moving %s to dir %s ...", $i+1, scalar(@$files_then_dirs), $file, $dir;
