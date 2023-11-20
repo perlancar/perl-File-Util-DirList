@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Test::Exception;
 use Test::More 0.98;
 
 use File::chdir;
@@ -36,12 +37,21 @@ subtest mv_files_to_dirs => sub {
     mkdir "mv_files_to_dirs";
     $CWD = "mv_files_to_dirs";
 
-    {
+    subtest basics => sub {
         setup_mv_files_to_dirs();
         local $CWD = "subd";
-        mv_files_to_dirs(files_then_dirs => [qw/f1 f2 f3 f4 d1 d2 d3 d4/]);
+        my $res = mv_files_to_dirs(files_then_dirs => [qw/f1 f2 f3 f4 d1 d2 d3 d4/]);
+        is($res->[0], 200) or diag explain $res;
         is_deeply([sort(find_wanted(sub {-f}, "."))], [map {"./$_"} qw(d1/f1 d2/f2 d3/f3 d4/f4 f5 f6 f7 f8)]);
-    }
+    };
+
+    subtest "arg: files_per_dir" => sub {
+        setup_mv_files_to_dirs();
+        local $CWD = "subd";
+        my $res = mv_files_to_dirs(files_then_dirs => [qw/f1 f2 f3 f4 f5 f6 d1 d2/], files_per_dir=>3);
+        is($res->[0], 200) or diag explain $res;
+        is_deeply([sort(find_wanted(sub {-f}, "."))], [map {"./$_"} qw(d1/f1 d1/f2 d1/f3 d2/f4 d2/f5 d2/f6 f7 f8)]);
+    };
 };
 
 done_testing;
