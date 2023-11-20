@@ -35,6 +35,12 @@ our %argspecs_common = (
         schema => 'posint*',
         default => 1,
     },
+    reverse => {
+        summary => 'Reverse processing (so first file will go to the last dir, second file to second-last dir, and so on)',
+        schema => 'true*',
+        cmdline_aliases => {r=>{}},
+        default => 1,
+    },
 );
 
 sub _cp_or_mv_or_ln_files_to_dirs {
@@ -70,7 +76,7 @@ sub _cp_or_mv_or_ln_files_to_dirs {
     for my $i (0 .. $num_dirs-1) {
         my $dir  = $dirs[$i];
         for my $j (0 .. $files_per_dir-1) {
-            my $ifile = $i*$files_per_dir + $j;
+            my $ifile = ($args{reverse} ? ($num_dirs-1-$i) : $i) * $files_per_dir + $j;
             my $file = $files[$ifile];
 
             if ($action eq 'mv') {
